@@ -12,7 +12,7 @@ def render_post_html(post, target_dir):
 	#setup
 	html_parser = HTMLParser.HTMLParser()
 
-	htmlbegin = """<html>
+	HTML_BEGIN = """<html>
 	<head>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 	</head>
@@ -20,7 +20,7 @@ def render_post_html(post, target_dir):
 	<div class="container">
 	<h1>"""
 
-	htmlend = """</div>
+	HTML_END = """</div>
 	</body>
 	</html>"""
 
@@ -31,7 +31,7 @@ def render_post_html(post, target_dir):
 
 	#Create and save the challenge page
 	file = open(os.path.join(target_dir, post.id + ".html"), 'w+')	
-	file.write(htmlbegin + post.title.encode('ascii', 'ignore') + "</h1>" + html_parser.unescape(post.selftext_html).encode('ascii', 'ignore') + htmlend)
+	file.write(HTML_BEGIN + post.title.encode('ascii', 'ignore') + "</h1>" + html_parser.unescape(post.selftext_html).encode('ascii', 'ignore') + HTML_END)
 	file.close()
 
 def get_challenges():
@@ -41,7 +41,7 @@ def get_challenges():
 	  os.mkdir(target_dir)
 
 	#HTML setup for masterlist
-	ml_html_head="""<html>
+	ML_HTML_HEAD="""<html>
 	<head>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 	</head>
@@ -53,7 +53,7 @@ def get_challenges():
 
 	#Prepare the masterlist file
 	masterlist = open(os.path.join(target_dir, "dps.html"), 'w+')
-	masterlist.write(ml_html_head)
+	masterlist.write(ML_HTML_HEAD)
 	masterlist.close()
 
 	challenges = []
@@ -63,14 +63,15 @@ def get_challenges():
 	r = praw.Reddit(user_agent='User-Agent: dailyprogrammerscraper v.1 by /u/bjshively')
 	posts = r.get_subreddit('dailyprogrammer').search('challenge', limit=None)
 
+	#Only match those with the [MM/DD/YYYY] post format
 	print "Making list of challenges..."
 	for post in posts:
 		if(re.search("\d+/\d+/\d+", post.title)):
 			challenges.append(post)
 
-	#Sort by creation date
+	#Sort reverse chronologically by creation date
 	print "Sorting challenges..."
-	challenges.sort(key=lambda x: x.created_utc)
+	challenges.sort(key=lambda x: x.created_utc, reverse=True)
 
 	for challenge in challenges:
 		print "Rendering " + challenge.id
@@ -80,6 +81,8 @@ def get_challenges():
 	masterlist = open(os.path.join(target_dir, "dps.html"), 'a')
 	masterlist.write('</ul>\n</div></body>\n</html>')
 	masterlist.close()
+
+	print "Challenges saved! Check the output in dps/"
 
 def main():
 	print "#" * 40
