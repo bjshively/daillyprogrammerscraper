@@ -2,7 +2,6 @@
 import os
 import sys
 import praw
-import urllib2
 import re
 import HTMLParser
 
@@ -66,13 +65,14 @@ def get_challenges():
 	#Only match those with the [MM/DD/YYYY] post format
 	print "Making list of challenges..."
 	for post in posts:
-		if(re.search("\d+/\d+/\d+", post.title)):
+		if(re.search("\d+[/-]\d+[/-]\d+", post.title)):
 			challenges.append(post)
 
 	#Sort reverse chronologically by creation date
 	print "Sorting challenges..."
 	challenges.sort(key=lambda x: x.created_utc, reverse=True)
 
+	#Render each challenge to an HTML doc
 	for challenge in challenges:
 		print "Rendering " + challenge.id
 		render_post_html(challenge, target_dir)
@@ -82,7 +82,7 @@ def get_challenges():
 	masterlist.write('</ul>\n</div></body>\n</html>')
 	masterlist.close()
 
-	print "Challenges saved! Check the output in dps/"
+	print "%s challenges saved! Check the output in dps/dps.html" % (len(challenges),)
 
 def main():
 	print "#" * 40
