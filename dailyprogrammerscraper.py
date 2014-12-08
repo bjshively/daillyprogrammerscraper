@@ -30,7 +30,8 @@ def render_post_html(post, target_dir):
 
 	#Create and save the challenge page
 	file = open(os.path.join(target_dir, post.id + ".html"), 'w+')	
-	file.write(HTML_BEGIN + post.title.encode('ascii', 'ignore') + "</h1>" + html_parser.unescape(post.selftext_html).encode('ascii', 'ignore') + HTML_END)
+	file.write(HTML_BEGIN + post.title.encode('ascii', 'ignore') + "</h1>" +
+		html_parser.unescape(post.selftext_html).encode('ascii', 'ignore') + HTML_END)
 	file.close()
 
 def get_challenges():
