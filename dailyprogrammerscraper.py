@@ -91,4 +91,4 @@ def main():
 	get_challenges()
 
 if __name__ == '__main__':
-  main()
+	main()
